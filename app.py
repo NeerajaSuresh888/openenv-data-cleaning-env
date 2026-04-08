@@ -2,7 +2,7 @@ from __future__ import annotations
 import uuid             #generate unique id for each task
 from typing import Any, Dict, Optional
 
-from fastapi import FastAPI, HTTPException      #HTTPException is used to handle errors like 404.
+from fastapi import FastAPI, HTTPException, Body    #HTTPException is used to handle errors like 404.
 from pydantic import BaseModel
 
 from env import DataCleaningEnv, Action
