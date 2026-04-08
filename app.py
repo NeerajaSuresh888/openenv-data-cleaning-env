@@ -42,7 +42,7 @@ def health():
 
 
 @app.post("/reset")
-def reset(req:ResetRequest):
+def reset(req: ResetRequest = Body(default=ResetRequest())):
     session_id = str(uuid.uuid4())
     env = DataCleaningEnv(task_id=req.task_id,seed=req.seed)
     result =env.reset(task_id = req.task_id)
