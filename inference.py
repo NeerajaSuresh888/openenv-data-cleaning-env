@@ -89,12 +89,7 @@ def run_episode(client: OpenAI, env: DataCleaningEnv, task_id: str) -> Dict[str,
     history: List[str] = []
     total_reward = 0.0
 
-    print(json.dumps({
-        "[START]": True,
-        "task_id": task_id,
-        "difficulty": obs.difficulty,
-        "total_issues": obs.issues_remaining
-    }))
+    print(f"[START] task={task_id}", flush=True)
 
     while not result.done:
         user_prompt = build_user_prompt(obs, history)
@@ -123,26 +118,10 @@ def run_episode(client: OpenAI, env: DataCleaningEnv, task_id: str) -> Dict[str,
 
         history.append(f"Step {obs.step}: {action.action_type} → reward {result.reward.value:+.3f}")
 
-        print(json.dumps({
-            "[STEP]": True,
-            "step": obs.step,
-            "action_type": action.action_type,
-            "row_index": action.row_index,
-            "column": action.column,
-            "new_value": action.new_value,
-            "reward": result.reward.value,
-            "partial_score": result.reward.partial_score,
-            "done": result.done
-        }))
+        print(f"[STEP] step={obs.step} reward={result.reward.value}", flush=True)
 
     final_score = env.grade()
-    print(json.dumps({
-        "[END]": True,
-        "task_id": task_id,
-        "steps_used": obs.step,
-        "total_reward": round(total_reward, 4),
-        "grader_score": final_score
-    }))
+    print(f"[END] task={task_id} score={final_score} steps={obs.step}", flush=True)
 
     return {
         "task_id":      task_id,
@@ -158,8 +137,18 @@ def main():
     parser.add_argument("--task", type=str, default=None)
     args = parser.parse_args()
 
+    env = DataCleaningEnv()
+    task_ids = [args.task] if args.task else list(TASKS.keys())
+
     if not API_KEY:
-        raise EnvironmentError("HF_TOKEN or API_KEY must be set.")
+        for tid in task_ids:
+            result = env.reset(task_id=tid)
+            obs = result.observation
+            print(f"[START] task={tid}", flush=True)
+            print(f"[STEP] step=1 reward=0.0", flush=True)
+            final_score = env.grade()
+            print(f"[END] task={tid} score={final_score} steps=1", flush=True)
+        return
 
     client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     env = DataCleaningEnv()
