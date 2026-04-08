@@ -78,3 +78,11 @@ def grade(req: GradeRequest):
     if not env:
         raise HTTPException(status_code=404, detail="Session not found")
     return{"session_id":req.session_id,"score":env.grade()}
+
+
+def main():
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+if __name__ == "__main__":
+    main()
