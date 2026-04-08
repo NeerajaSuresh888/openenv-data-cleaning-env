@@ -1,0 +1,67 @@
+name: data-cleaning-env
+version: 1.0.0
+description: >
+  An OpenEnv-compliant environment for data cleaning and validation.
+  Agents must identify and fix real-world data quality issues across
+  three difficulty levels.
+
+tasks:
+  - id: fill_missing_easy
+    difficulty: easy
+    max_steps: 10
+    total_issues: 5
+
+  - id: fix_types_medium
+    difficulty: medium
+    max_steps: 20
+    total_issues: 6
+
+  - id: normalize_hard
+    difficulty: hard
+    max_steps: 30
+    total_issues: 10
+
+action_space:
+  actions:
+    - fill_missing
+    - fix_type
+    - remove_duplicate
+    - normalize_value
+    - flag_outlier
+    - validate_rule
+    - submit
+
+tags:
+  - openenv
+  - data-cleaning
+  - real-world
+
+observation_space:
+  task_id: string
+  task_description: string
+  difficulty: string
+  dataset: list_of_records
+  step: integer
+  max_steps: integer
+  issues_remaining: integer
+  last_action_result: string
+  done: boolean
+
+reward:
+  range: [-1.0, 1.0]
+  shaped: true
+  per_issue_fixed: 0.10–0.20
+  completion_bonus: up_to_0.20
+  invalid_action_penalty: -0.10
+  step_penalty: -0.02
+
+api:
+  reset: POST /reset
+  step:  POST /step
+  state: GET  /state/{session_id}
+  grade: POST /grade
+
+docker:
+  port: 7860
+  base_image: python:3.11-slim
+
