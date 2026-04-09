@@ -121,6 +121,7 @@ def run_episode(client: OpenAI, env: DataCleaningEnv, task_id: str) -> Dict[str,
         print(f"[STEP] step={obs.step} reward={result.reward.value}", flush=True)
 
     final_score = env.grade()
+    final_score = max(0.01, min(0.99, final_score))
     print(f"[END] task={task_id} score={final_score} steps={obs.step}", flush=True)
 
     return {
