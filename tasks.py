@@ -28,7 +28,7 @@ def _grade_easy(cleaned: List[Dict], original: List[Dict]) -> float:
         if val is None
     ]
     if not missing_cells:
-        return 1.0
+        return 0.99  # ← removed the old return 1.0
 
     fixed = 0
     id_to_row = {r["id"]: r for r in cleaned}
@@ -37,8 +37,7 @@ def _grade_easy(cleaned: List[Dict], original: List[Dict]) -> float:
         if row and row.get(col) not in (None, "", "null", "N/A"):
             fixed += 1
 
-    return round(fixed / len(missing_cells), 4)
-
+    return round(max(0.01, min(0.99, fixed / len(missing_cells))), 4)
 
 TASK_EASY = Task(
     task_id="fill_missing_easy",
@@ -103,8 +102,7 @@ def _grade_medium(cleaned: List[Dict], original: List[Dict]) -> float:
         if is_duplicate_free:
             score += 1
 
-    return round(score / total, 4)
-
+    return round(max(0.01, min(0.99, score / total)), 4)
 
 TASK_MEDIUM = Task(
     task_id="fix_types_medium",
@@ -185,7 +183,7 @@ def _grade_hard(cleaned: List[Dict], original: List[Dict]) -> float:
     if r8 and not r8.get("name", "").isupper():
         score += 1
 
-    return round(score / total, 4)
+    return round(max(0.01, min(0.99, score / total)), 4)
 
 
 TASK_HARD = Task(
